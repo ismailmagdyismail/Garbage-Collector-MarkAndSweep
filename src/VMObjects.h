@@ -15,7 +15,21 @@ using VMPair = std::pair<VMObject *, VMObject *>;
 //! Variability will be in terms of behhaviour not data, so we will use visitor / Separate data from behaviour.
 struct VMObject
 {
+    VMObject()
+    {
+        m_ullCreatedInstances++;
+    }
+
+    ~VMObject()
+    {
+        m_ullCreatedInstances--;
+    }
+
     // void accept(IVisitor);
     bool m_bMarked{false};
     std::variant<VMInt, VMPair> m_taggedUnionObject;
+    static unsigned long long m_ullCreatedInstances;
 };
+
+VMObject *CreateIntObject(int p_iVal);
+VMObject *CreatePairObject(VMObject *p_pFirst, VMObject *p_pSecond);
