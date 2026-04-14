@@ -1,6 +1,7 @@
 //! VM Includes
 #include "VM.h"
 #include "VMObjects.h"
+#include "GarbageCollector.h"
 
 #define MAX_STACK_SIZE 50000
 
@@ -22,10 +23,13 @@ void VM::AllocateObject(VMObject *p_pVMObject)
 
 void VM::DeAllocateAll()
 {
+    //! Removes Stack access to any of the allocated elements
     m_oVMStack.PopAll();
+
+    //! Garbage collect any remaining Elements.
     while (!m_listAllocatedObjects.empty())
     {
-        delete m_listAllocatedObjects.back();
+        GarbageCollector::ReclaimElement(m_listAllocatedObjects.back());
         m_listAllocatedObjects.pop_back();
     }
 }
