@@ -14,6 +14,7 @@ public:
     VM(unsigned int p_uiMaxAllocationThreshold);
     ~VM();
     unsigned int AllocateObject(VMObject *p_oObject);
+    void PopStack();
 
 private:
     void DeAllocateAll();

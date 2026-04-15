@@ -41,6 +41,11 @@ void TestGCPause()
     uiGCCollections += oVM.AllocateObject(CreateIntObject(2));
     uiGCCollections += oVM.AllocateObject(CreateIntObject(3));
     uiGCCollections += oVM.AllocateObject(CreateIntObject(4));
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(5));
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(6));
+    oVM.PopStack();
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(7));
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(8));
     std::cout << "Total GC Objects ReClaimations = " << uiGCCollections << std::endl;
 }
 

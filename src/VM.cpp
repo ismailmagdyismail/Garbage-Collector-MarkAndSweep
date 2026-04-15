@@ -31,7 +31,7 @@ unsigned int VM::AllocateObject(VMObject *p_pVMObject)
 void VM::DeAllocateAll()
 {
     //! Removes Stack access to any of the allocated elements
-    m_oVMStack.PopAll();
+    PopStack();
 
     //! Garbage collect any remaining Elements.
     while (!m_listAllocatedObjects.empty())
@@ -39,4 +39,9 @@ void VM::DeAllocateAll()
         GarbageCollector::ReclaimElement(m_listAllocatedObjects.back());
         m_listAllocatedObjects.pop_back();
     }
+}
+
+void VM::PopStack()
+{
+    m_oVMStack.PopAll();
 }
