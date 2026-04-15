@@ -11,10 +11,10 @@ BUILD ?= release
 DEBUG_EXT := _g
 
 ifeq ($(BUILD),debug)
-    CXXFLAGS := -std=c++17 -O0 -g
+    CXXFLAGS := -std=c++17 -O0 -g -Wall -Werror -Wextra
     TARGET_SUFFIX := $(DEBUG_EXT)
 else
-    CXXFLAGS := -std=c++17 -O2
+    CXXFLAGS := -std=c++17 -O2 -Wall -Werror -Wextra
     TARGET_SUFFIX :=
 endif
 

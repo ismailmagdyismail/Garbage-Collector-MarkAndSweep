@@ -40,7 +40,7 @@ std::vector<VMObject *> VMStack::GetReachableObjects()
 {
     std::vector<VMObject *> vecReachableObjects;
     vecReachableObjects.reserve(m_uiIndex);
-    for (int i = 0; i < m_uiIndex; ++i)
+    for (unsigned int i = 0; i < m_uiIndex; ++i)
     {
         vecReachableObjects.push_back(m_arrObjectsStack[i]);
     }
