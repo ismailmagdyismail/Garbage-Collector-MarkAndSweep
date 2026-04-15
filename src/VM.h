@@ -6,18 +6,19 @@
 //! VM includes
 #include "VMStack.h"
 
-class VMObject;
+struct VMObject;
 
 class VM
 {
 public:
-    VM();
+    VM(unsigned int p_uiMaxAllocationThreshold);
     ~VM();
-    void AllocateObject(VMObject *p_oObject);
+    unsigned int AllocateObject(VMObject *p_oObject);
 
 private:
     void DeAllocateAll();
 
+    unsigned int m_uiMaxAllocationThreshold;
     std::list<VMObject *> m_listAllocatedObjects;
     VMStack m_oVMStack;
 };

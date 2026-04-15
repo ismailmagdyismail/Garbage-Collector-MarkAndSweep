@@ -5,8 +5,8 @@
 
 #define MAX_STACK_SIZE 50000
 
-VM::VM()
-    : m_oVMStack(50000)
+VM::VM(unsigned int p_uiMaxAllocationThreshold)
+    : m_uiMaxAllocationThreshold(p_uiMaxAllocationThreshold), m_oVMStack(MAX_STACK_SIZE)
 {
 }
 
@@ -15,10 +15,17 @@ VM::~VM()
     DeAllocateAll();
 }
 
-void VM::AllocateObject(VMObject *p_pVMObject)
+unsigned int VM::AllocateObject(VMObject *p_pVMObject)
 {
+    unsigned int uiGCCollectedElements{0};
+    if (m_listAllocatedObjects.size() >= m_uiMaxAllocationThreshold)
+    {
+        GarbageCollector::Mark(m_oVMStack.GetReachableObjects());
+        uiGCCollectedElements = GarbageCollector::Sweep(m_listAllocatedObjects);
+    }
     m_listAllocatedObjects.push_back(p_pVMObject);
     m_oVMStack.Push(p_pVMObject);
+    return uiGCCollectedElements;
 }
 
 void VM::DeAllocateAll()

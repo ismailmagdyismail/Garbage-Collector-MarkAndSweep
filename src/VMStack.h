@@ -3,7 +3,7 @@
 //! System includes
 #include <vector>
 
-class VMObject;
+struct VMObject;
 
 class VMStack
 {

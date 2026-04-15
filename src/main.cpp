@@ -7,7 +7,7 @@
 
 void BasicAllocation()
 {
-    VM oVM;
+    VM oVM(1000);
     VMObject *object1 = CreateIntObject(1);
     VMObject *object2 = CreatePairObject(CreateIntObject(3), CreateIntObject(4));
 
@@ -17,7 +17,7 @@ void BasicAllocation()
 
 void NestedObjects()
 {
-    VM oVM;
+    VM oVM(10000);
     VMObject *object1 = CreateIntObject(1);
     VMObject *object2 = CreatePairObject(
         CreatePairObject(CreateIntObject(3), CreateIntObject(4)),
@@ -27,10 +27,27 @@ void NestedObjects()
     oVM.AllocateObject(object2);
 }
 
-int main()
+void TestDestructionReclaimation()
 {
     BasicAllocation();
     NestedObjects();
+}
+
+void TestGCPause()
+{
+    VM oVM(2);
+    unsigned int uiGCCollections = 0;
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(1));
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(2));
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(3));
+    uiGCCollections += oVM.AllocateObject(CreateIntObject(4));
+    std::cout << "Total GC Objects ReClaimations = " << uiGCCollections << std::endl;
+}
+
+int main()
+{
+    TestDestructionReclaimation();
+    TestGCPause();
 
     std::cout << "Number of VM Objects' Instances Remaining = " << VMObject::m_ullCreatedInstances << std::endl;
     if (VMObject::m_ullCreatedInstances > 0)

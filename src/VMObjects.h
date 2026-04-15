@@ -4,7 +4,7 @@
 #include <vector>
 #include <variant>
 
-class VMObject;
+struct VMObject;
 
 using VMInt = int;
 using VMPair = std::pair<VMObject *, VMObject *>;
