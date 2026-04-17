@@ -4,7 +4,7 @@
 #include <vector>
 #include <list>
 
-struct VMObject;
+class VMObject;
 
 //! Visitor on VMObject(s) For Garabge Collection
 class GarbageCollector

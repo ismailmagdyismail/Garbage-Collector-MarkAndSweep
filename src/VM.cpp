@@ -1,6 +1,5 @@
 //! VM Includes
 #include "VM.h"
-#include "VMObjects.h"
 #include "GarbageCollector.h"
 
 #define MAX_STACK_SIZE 50000
@@ -15,17 +14,36 @@ VM::~VM()
     DeAllocateAll();
 }
 
-unsigned int VM::AllocateObject(VMObject *p_pVMObject)
+VMObject *VM::CreateInt(int p_iValue)
 {
-    unsigned int uiGCCollectedElements{0};
+    return RegisterAllocation(new VMIntObject(p_iValue));
+}
+
+VMObject *VM::CreatePair(VMObject *p_pFirst, VMObject *p_pSecond)
+{
+    return RegisterAllocation(new VMPairObject(p_pFirst, p_pSecond));
+}
+
+VMObject *VM::CreateArray(const std::vector<VMObject *> &p_vecElements)
+{
+    return RegisterAllocation(new VMArrayObject(p_vecElements));
+}
+
+VMObject *VM::CreateString(const std::string &p_strValue)
+{
+    return RegisterAllocation(new VMStringObject(p_strValue));
+}
+
+VMObject *VM::RegisterAllocation(VMObject *p_pVMObject)
+{
     if (m_listAllocatedObjects.size() >= m_uiMaxAllocationThreshold)
     {
         GarbageCollector::Mark(m_oVMStack.GetReachableObjects());
-        uiGCCollectedElements = GarbageCollector::Sweep(m_listAllocatedObjects);
+        GarbageCollector::Sweep(m_listAllocatedObjects);
     }
     m_listAllocatedObjects.push_back(p_pVMObject);
     m_oVMStack.Push(p_pVMObject);
-    return uiGCCollectedElements;
+    return p_pVMObject;
 }
 
 void VM::DeAllocateAll()

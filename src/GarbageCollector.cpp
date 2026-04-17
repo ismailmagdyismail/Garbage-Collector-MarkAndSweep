@@ -1,29 +1,11 @@
-//! System Includes
-#include "variant"
-
 //! VM Includes
 #include "GarbageCollector.h"
 #include "VMObjects.h"
 
 unsigned int GarbageCollector::ReclaimElement(VMObject *p_pVMObject)
 {
-    if (auto *intVal = std::get_if<VMInt>(&p_pVMObject->m_taggedUnionObject))
-    {
-        delete p_pVMObject;
-        return 1;
-    }
-    else if (auto *pairVal = std::get_if<VMPair>(&p_pVMObject->m_taggedUnionObject))
-    {
-        unsigned int uiFirstReclaimedElements = ReclaimElement(pairVal->first);
-        unsigned int uiSecondReclaimedElements = ReclaimElement(pairVal->second);
-        unsigned int uiReclaimedElements = 1 + uiFirstReclaimedElements + uiSecondReclaimedElements;
-        delete p_pVMObject;
-        return uiReclaimedElements;
-    }
-    else
-    {
-        throw std::runtime_error("Invalid VM Object type encountered");
-    }
+    delete p_pVMObject;
+    return 1;
 }
 
 unsigned int GarbageCollector::Mark(const std::vector<VMObject *> &p_vecRechableObjects)
@@ -38,26 +20,25 @@ unsigned int GarbageCollector::Mark(const std::vector<VMObject *> &p_vecRechable
 
 unsigned int GarbageCollector::Mark(VMObject *p_pVMObject)
 {
+    if (p_pVMObject == nullptr)
+    {
+        return 0;
+    }
+
     if (p_pVMObject->m_bMarked)
     {
         return 0;
     }
-    if (auto *intVal = std::get_if<VMInt>(&p_pVMObject->m_taggedUnionObject))
-    {
-        p_pVMObject->m_bMarked = true;
-        return 1;
-    }
-    else if (auto *pairVal = std::get_if<VMPair>(&p_pVMObject->m_taggedUnionObject))
-    {
-        unsigned int uiFirstReachableElements = Mark(pairVal->first);
-        unsigned int uiSecondReachableElements = Mark(pairVal->second);
-        p_pVMObject->m_bMarked = true;
-        return 1 + uiFirstReachableElements + uiSecondReachableElements;
-    }
-    else
-    {
-        throw std::runtime_error("Invalid VM Object type encountered");
-    }
+
+    p_pVMObject->m_bMarked = true;
+
+    unsigned int uiReachableObjects = 1;
+    p_pVMObject->Trace(
+        [&](VMObject *p_pChildObject)
+        {
+            uiReachableObjects += Mark(p_pChildObject);
+        });
+    return uiReachableObjects;
 }
 
 unsigned int GarbageCollector::Sweep(std::list<VMObject *> &p_listAllocatedObjects)
