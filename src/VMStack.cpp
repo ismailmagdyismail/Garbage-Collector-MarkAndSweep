@@ -27,8 +27,8 @@ void VMStack::Push(VMObject *p_oVMObject)
 VMObject *VMStack::Pop()
 {
     assert(m_uiIndex > 0);
-    VMObject *pObject = m_arrObjectsStack[m_uiIndex];
     --m_uiIndex;
+    VMObject *pObject = m_arrObjectsStack[m_uiIndex];
     return pObject;
 }
 
