@@ -14,6 +14,7 @@ VMStack::VMStack(unsigned int p_uiMaxStackSize)
 VMStack::~VMStack()
 {
     PopAll();
+    delete[] m_arrObjectsStack;
 }
 
 void VMStack::Push(VMObject *p_oVMObject)
