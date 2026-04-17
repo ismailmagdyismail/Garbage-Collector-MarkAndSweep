@@ -1,9 +1,10 @@
 # Paths
 ROOT_PATH := ..
-BIN_PATH := $(ROOT_PATH)/bin
 SRC_PATH := $(ROOT_PATH)/src
-OBJS_PATH := $(ROOT_PATH)/objs
-LIB_PATH := $(ROOT_PATH)/lib_x
+ARTIFACTS_PATH := $(ROOT_PATH)/artifacts
+BIN_PATH := $(ARTIFACTS_PATH)/bin
+OBJS_PATH := $(ARTIFACTS_PATH)/objs
+LIB_PATH := $(ARTIFACTS_PATH)/lib_x
 
 # Build Type
 TARGET_NAME := GC
@@ -37,13 +38,10 @@ CXX := g++
 LFLAGS := -lpthread
 INCLUDES := -I$(SRC_PATH)
 
-all: setup $(TARGET) $(LIB_TARGET)
+all: setup $(LIB_TARGET)
 
 debug:
 	$(MAKE) BUILD="debug"
-
-$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $(TARGET) $(LFLAGS)
 
 $(LIB_TARGET): $(OBJS)
 	ar rcs $@ $(OBJS)
@@ -59,4 +57,4 @@ setup:
 -include $(DEPS)
 
 clean:
-	rm -rf $(OBJS_PATH)/*.o $(OBJS_PATH)/*.d $(BIN_PATH)/* $(LIB_PATH)/*
+	rm -rf $(OBJS_PATH)/*.o $(OBJS_PATH)/*.d $(LIB_PATH)/*
