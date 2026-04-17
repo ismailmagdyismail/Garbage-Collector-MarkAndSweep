@@ -7,23 +7,12 @@
 
 unsigned int GarbageCollector::ReclaimElement(VMObject *p_pVMObject)
 {
-    if (auto *intVal = std::get_if<VMInt>(&p_pVMObject->m_taggedUnionObject))
-    {
-        delete p_pVMObject;
-        return 1;
-    }
-    else if (auto *pairVal = std::get_if<VMPair>(&p_pVMObject->m_taggedUnionObject))
-    {
-        unsigned int uiFirstReclaimedElements = ReclaimElement(pairVal->first);
-        unsigned int uiSecondReclaimedElements = ReclaimElement(pairVal->second);
-        unsigned int uiReclaimedElements = 1 + uiFirstReclaimedElements + uiSecondReclaimedElements;
-        delete p_pVMObject;
-        return uiReclaimedElements;
-    }
-    else
-    {
-        throw std::runtime_error("Invalid VM Object type encountered");
-    }
+    //! Only delete / reclaim your self.
+    //! For nested objects (pairs, arrays, etc.. would be reachable by VM memory manager and Not Marked by Mark phase.
+    //! so we gurantee that we can reach it from Memory Manager when passing list of all Allocated, not Marked Elements.
+    //! so this can handle cyclic references and nesting without double deletion
+    delete p_pVMObject;
+    return 1;
 }
 
 unsigned int GarbageCollector::Mark(const std::vector<VMObject *> &p_vecRechableObjects)

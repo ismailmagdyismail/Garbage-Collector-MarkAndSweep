@@ -13,10 +13,22 @@ class VM
 public:
     VM(unsigned int p_uiMaxAllocationThreshold);
     ~VM();
-    unsigned int AllocateObject(VMObject *p_oObject);
     void PopStack();
 
+    struct AllocationResult
+    {
+        bool m_bSuccess;
+        VMObject *m_pAllocatedObject;
+        unsigned int m_uiGarbageCollectedObjectsCount{0};
+    };
+
+    //! Memory Allocatation Management.
+    //! Could be its own module / Builder maybe.
+    AllocationResult CreateIntObject(int p_iVal);
+    AllocationResult CreatePairObject(VMObject *p_pFirst, VMObject *p_pSecond);
+
 private:
+    AllocationResult AllocateObject(VMObject *p_oObject);
     void DeAllocateAll();
 
     unsigned int m_uiMaxAllocationThreshold;

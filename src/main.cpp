@@ -8,23 +8,28 @@
 void BasicAllocation()
 {
     VM oVM(1000);
-    VMObject *object1 = CreateIntObject(1);
-    VMObject *object2 = CreatePairObject(CreateIntObject(3), CreateIntObject(4));
+    VMObject *object1 = oVM.CreateIntObject(1).m_pAllocatedObject;
+    VMObject *object2 = oVM.CreatePairObject(oVM.CreateIntObject(3).m_pAllocatedObject, oVM.CreateIntObject(4).m_pAllocatedObject).m_pAllocatedObject;
 
-    oVM.AllocateObject(object1);
-    oVM.AllocateObject(object2);
+    //! Not used
+    static_cast<void>(object1);
+    static_cast<void>(object2);
 }
 
 void NestedObjects()
 {
     VM oVM(10000);
-    VMObject *object1 = CreateIntObject(1);
-    VMObject *object2 = CreatePairObject(
-        CreatePairObject(CreateIntObject(3), CreateIntObject(4)),
-        CreatePairObject(CreatePairObject(CreateIntObject(5), CreateIntObject(6)), CreateIntObject(7)));
+    VMObject *object1 = oVM.CreateIntObject(1).m_pAllocatedObject;
+    VMObject *pair1 = oVM.CreatePairObject(oVM.CreateIntObject(3).m_pAllocatedObject, oVM.CreateIntObject(4).m_pAllocatedObject).m_pAllocatedObject;
+    VMObject *pair2 = oVM.CreatePairObject(
+                             oVM.CreatePairObject(oVM.CreateIntObject(5).m_pAllocatedObject, oVM.CreateIntObject(6).m_pAllocatedObject).m_pAllocatedObject,
+                             oVM.CreateIntObject(7).m_pAllocatedObject)
+                          .m_pAllocatedObject;
+    VMObject *object2 = oVM.CreatePairObject(pair1, pair2).m_pAllocatedObject;
 
-    oVM.AllocateObject(object1);
-    oVM.AllocateObject(object2);
+    //! Not Used
+    static_cast<void>(object1);
+    static_cast<void>(object2);
 }
 
 void TestDestructionReclaimation()
@@ -37,15 +42,15 @@ void TestGCPause()
 {
     VM oVM(2);
     unsigned int uiGCCollections = 0;
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(1));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(2));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(3));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(4));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(5));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(6));
+    uiGCCollections += oVM.CreateIntObject(1).m_uiGarbageCollectedObjectsCount;
+    uiGCCollections += oVM.CreateIntObject(2).m_uiGarbageCollectedObjectsCount;
+    uiGCCollections += oVM.CreateIntObject(3).m_uiGarbageCollectedObjectsCount;
+    uiGCCollections += oVM.CreateIntObject(4).m_uiGarbageCollectedObjectsCount;
+    uiGCCollections += oVM.CreateIntObject(5).m_uiGarbageCollectedObjectsCount;
+    uiGCCollections += oVM.CreateIntObject(6).m_uiGarbageCollectedObjectsCount;
     oVM.PopStack();
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(7));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(8));
+    uiGCCollections += oVM.CreateIntObject(7).m_uiGarbageCollectedObjectsCount;
+    uiGCCollections += oVM.CreateIntObject(8).m_uiGarbageCollectedObjectsCount;
     std::cout << "Total GC Objects ReClaimations = " << uiGCCollections << std::endl;
 }
 

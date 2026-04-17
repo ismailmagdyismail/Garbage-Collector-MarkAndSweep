@@ -30,6 +30,3 @@ struct VMObject
     std::variant<VMInt, VMPair> m_taggedUnionObject;
     static unsigned long long m_ullCreatedInstances;
 };
-
-VMObject *CreateIntObject(int p_iVal);
-VMObject *CreatePairObject(VMObject *p_pFirst, VMObject *p_pSecond);
