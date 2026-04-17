@@ -1,5 +1,6 @@
 //! System includes
 #include <iostream>
+#include <vector>
 
 //! VM Includes
 #include "VM.h"
@@ -8,23 +9,33 @@
 void BasicAllocation()
 {
     VM oVM(1000);
-    VMObject *object1 = CreateIntObject(1);
-    VMObject *object2 = CreatePairObject(CreateIntObject(3), CreateIntObject(4));
+    VMObject *object1 = oVM.CreateInt(1);
+    VMObject *object2 = oVM.CreatePair(oVM.CreateInt(3), oVM.CreateInt(4));
 
-    oVM.AllocateObject(object1);
-    oVM.AllocateObject(object2);
+    static_cast<void>(object1);
+    static_cast<void>(object2);
 }
 
 void NestedObjects()
 {
     VM oVM(10000);
-    VMObject *object1 = CreateIntObject(1);
-    VMObject *object2 = CreatePairObject(
-        CreatePairObject(CreateIntObject(3), CreateIntObject(4)),
-        CreatePairObject(CreatePairObject(CreateIntObject(5), CreateIntObject(6)), CreateIntObject(7)));
+    VMObject *object1 = oVM.CreateInt(1);
+    VMObject *object2 = oVM.CreatePair(
+        oVM.CreatePair(oVM.CreateInt(3), oVM.CreateInt(4)),
+        oVM.CreatePair(oVM.CreatePair(oVM.CreateInt(5), oVM.CreateInt(6)), oVM.CreateInt(7)));
 
-    oVM.AllocateObject(object1);
-    oVM.AllocateObject(object2);
+    static_cast<void>(object1);
+    static_cast<void>(object2);
+}
+
+void NewTypesRegisterThroughDescriptors()
+{
+    VM oVM(10000);
+    VMObject *object1 = oVM.CreateString("root");
+    VMObject *object2 = oVM.CreateArray({oVM.CreateInt(10), oVM.CreateInt(20), oVM.CreatePair(oVM.CreateInt(30), object1)});
+
+    static_cast<void>(object1);
+    static_cast<void>(object2);
 }
 
 void TestDestructionReclaimation()
@@ -36,22 +47,22 @@ void TestDestructionReclaimation()
 void TestGCPause()
 {
     VM oVM(2);
-    unsigned int uiGCCollections = 0;
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(1));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(2));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(3));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(4));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(5));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(6));
+    oVM.CreateInt(1);
+    oVM.CreateInt(2);
+    oVM.CreateInt(3);
+    oVM.CreateInt(4);
+    oVM.CreateInt(5);
+    oVM.CreateInt(6);
     oVM.PopStack();
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(7));
-    uiGCCollections += oVM.AllocateObject(CreateIntObject(8));
-    std::cout << "Total GC Objects ReClaimations = " << uiGCCollections << std::endl;
+    oVM.CreateInt(7);
+    oVM.CreateInt(8);
+    std::cout << "Descriptor-based GC run complete" << std::endl;
 }
 
 int main()
 {
     TestDestructionReclaimation();
+    NewTypesRegisterThroughDescriptors();
     TestGCPause();
 
     std::cout << "Number of VM Objects' Instances Remaining = " << VMObject::m_ullCreatedInstances << std::endl;
